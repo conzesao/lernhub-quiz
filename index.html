@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LernHub - Gymnasium 5. Klasse Bayern</title>
-    <meta name="description" content="Interaktive Lern-App für Gymnasium 5. Klasse Bayern - Mathematik, Englisch, Deutsch, Natur & Technik">
+    <title>Mika's LernApp - Gymnasium 5. Klasse Bayern</title>
+    <meta name="description" content="Mika's persönliche Lern-App für Gymnasium 5. Klasse Bayern - Mathematik, Englisch, Deutsch, Natur & Technik">
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
@@ -395,11 +395,9 @@
             color: #b0bec5;
         }
         
-        .mistake-remove-btn {
+        .mistake-remove-btn, .mistake-practice-btn {
             position: absolute !important;
             top: 10px;
-            right: 10px;
-            background: linear-gradient(45deg, #66bb6a, #4caf50) !important;
             width: 30px !important;
             height: 30px !important;
             border-radius: 50% !important;
@@ -409,6 +407,16 @@
             display: flex;
             align-items: center;
             justify-content: center;
+        }
+        
+        .mistake-remove-btn {
+            right: 10px;
+            background: linear-gradient(45deg, #66bb6a, #4caf50) !important;
+        }
+        
+        .mistake-practice-btn {
+            right: 50px;
+            background: linear-gradient(45deg, #ff9800, #f57c00) !important;
         }
         
         .subject-mistakes h4 {
@@ -428,7 +436,7 @@
     <div class="particles" id="particlesContainer"></div>
     
     <div class="container">
-        <h1>LernHub</h1>
+        <h1>Mika's LernApp</h1>
         <p class="subtitle">🏫 Gymnasium 5. Klasse Bayern • Anspruchsvolles Lernen</p>
         
         <!-- Belohnungen Dashboard -->
@@ -1120,6 +1128,19 @@
                         
                         questionDiv.appendChild(details);
                         
+                        // Üben Button
+                        var practiceBtn = document.createElement('button');
+                        practiceBtn.className = 'mistake-practice-btn';
+                        practiceBtn.innerHTML = '↻';
+                        practiceBtn.title = 'Nochmal üben';
+                        practiceBtn.onclick = function(subj, idx) {
+                            return function() {
+                                practiceIndividualQuestion(subj, idx);
+                            };
+                        }(subject, index);
+                        questionDiv.appendChild(practiceBtn);
+                        
+                        // Beherrscht Button  
                         var removeBtn = document.createElement('button');
                         removeBtn.className = 'mistake-remove-btn';
                         removeBtn.innerHTML = '✓';
@@ -1143,6 +1164,27 @@
             }
             
             modal.style.display = 'flex';
+        }
+        
+        
+        function practiceIndividualQuestion(subject, index) {
+            if (mistakePool[subject] && mistakePool[subject][index]) {
+                var question = mistakePool[subject][index];
+                
+                // Erstelle temporäres Quiz mit nur dieser Frage
+                currentSubject = subject;
+                currentMistakeMode = true;
+                questions = [Object.assign({}, question, {subject: subject})];
+                
+                // Schließe Modal und starte Quiz
+                closeMistakeOverview();
+                document.getElementById('subjectGrid').style.display = 'none';
+                document.getElementById('quizContainer').style.display = 'block';
+                
+                currentQuestionIndex = 0;
+                score = 0;
+                showQuestion();
+            }
         }
         
         function removeSingleMistake(subject, index) {
@@ -1231,7 +1273,7 @@
         
         // App initialisieren
         window.addEventListener('load', function() {
-            console.log('LernHub Gymnasium 5: JavaScript erfolgreich geladen!');
+            console.log('Mika\'s LernApp: JavaScript erfolgreich geladen!');
             createParticles();
             updateRewardDisplay();
             updateMistakePoolDisplay();
