@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LernHub - Gymnasium 5. Klasse Bayern</title>
+    <meta name="description" content="Interaktive Lern-App für Gymnasium 5. Klasse Bayern - Mathematik, Englisch, Deutsch, Natur & Technik">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Fredoka', sans-serif;
+            background: #0a0e1a;
+            color: white;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 20% 20%, rgba(79, 195, 247, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(102, 187, 106, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 60%, rgba(171, 71, 188, 0.05) 0%, transparent 50%);
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.1;
+            animation: float 20s infinite linear;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.1;
+            }
+            90% {
+                opacity: 0.1;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+        
+        h1 {
+            text-align: center;
+            background: linear-gradient(45deg, #4fc3f7, #66bb6a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: clamp(2.5rem, 8vw, 4rem);
+            font-weight: 700;
+            margin-bottom: 10px;
+            animation: glow-title 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow-title {
+            from { 
+                filter: brightness(1) drop-shadow(0 0 10px rgba(79, 195, 247, 0.3)); 
+            }
+            to { 
+                filter: brightness(1.2) drop-shadow(0 0 20px rgba(79, 195, 247, 0.5)); 
+            }
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #b0bec5;
+            margin-bottom: 40px;
+            font-size: 1.2rem;
+        }
+        
+        .rewards-dashboard {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        
+        .reward-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            min-width: 140px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .reward-item:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+        
+        .reward-item.highlight {
+            background: linear-gradient(45deg, rgba(255, 152, 0, 0.2), rgba(255, 193, 7, 0.2));
+            border-color: #ff9800;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow {
+            from { box-shadow: 0 0 5px rgba(255, 152, 0, 0.3); }
+            to { box-shadow: 0 0 20px rgba(255, 152, 0, 0.6); }
+        }
+        
+        .reward-icon {
+            font-size: 1.8rem;
+        }
+        
+        .reward-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .reward-number {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #4fc3f7;
+        }
+        
+        .reward-item.highlight .reward-number {
+            color: #ff9800;
+        }
+        
+        .reward-label {
+            font-size: 0.8rem;
+            color: #b0bec5;
+            white-space: nowrap;
+        }
+        
+        .subject-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .subject-card {
+            background: rgba(30, 41, 69, 0.8);
+            border-radius: 20px;
+            padding: 30px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+        
+        .subject-card:hover {
+            transform: translateY(-10px) scale(1.03);
+            border-color: rgba(79, 195, 247, 0.4);
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.3),
+                0 0 30px rgba(79, 195, 247, 0.2);
+        }
+        
+        .subject-card:active {
+            transform: translateY(-5px) scale(1.01);
+        }
+        
+        .subject-icon {
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+            display: block;
+            transition: all 0.3s ease;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+        }
+        
+        .subject-card:hover .subject-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+        
+        .subject-title {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            font-weight: 600;
+            background: linear-gradient(45deg, #4fc3f7, #29b6f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .quiz-container {
+            background: linear-gradient(135deg, rgba(26, 31, 53, 0.95), rgba(30, 41, 69, 0.95));
+            border-radius: 20px;
+            padding: 40px;
+            margin-top: 30px;
+            border: 2px solid rgba(79, 195, 247, 0.3);
+            display: none;
+            backdrop-filter: blur(15px);
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.3),
+                0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+            animation: slideUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .answer {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 12px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            font-size: 1.1rem;
+        }
+        
+        .answer:hover {
+            background: rgba(79, 195, 247, 0.15);
+            border-color: rgba(79, 195, 247, 0.4);
+            transform: translateY(-2px);
+        }
+        
+        .answer.correct {
+            background: linear-gradient(45deg, rgba(102, 187, 106, 0.2), rgba(129, 199, 132, 0.2));
+            border-color: #66bb6a;
+            animation: correctPulse 0.6s ease-out;
+        }
+        
+        .answer.incorrect {
+            background: linear-gradient(45deg, rgba(244, 67, 54, 0.2), rgba(239, 83, 80, 0.2));
+            border-color: #f44336;
+            animation: incorrectShake 0.5s ease-out;
+        }
+        
+        @keyframes correctPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes incorrectShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        
+        .feedback {
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 15px;
+            font-weight: 500;
+            text-align: center;
+            animation: fadeIn 0.5s ease-out;
+            font-size: 1.1rem;
+        }
+        
+        .feedback.correct {
+            background: linear-gradient(45deg, rgba(102, 187, 106, 0.15), rgba(129, 199, 132, 0.15));
+            border: 2px solid #66bb6a;
+            color: #81c784;
+        }
+        
+        .feedback.incorrect {
+            background: linear-gradient(45deg, rgba(244, 67, 54, 0.15), rgba(239, 83, 80, 0.15));
+            border: 2px solid #f44336;
+            color: #ef5350;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        button {
+            background: linear-gradient(45deg, #4fc3f7, #29b6f6);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-family: 'Fredoka', sans-serif;
+            font-weight: 500;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 8px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(79, 195, 247, 0.3);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .audio-button {
+            background: linear-gradient(45deg, #ff9800, #f57c00) !important;
+            padding: 8px 12px !important;
+            margin: 5px !important;
+            font-size: 14px !important;
+            border-radius: 20px !important;
+        }
+        
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.1);
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(90deg, #4fc3f7, #66bb6a);
+            height: 100%;
+            transition: width 0.5s ease;
+            border-radius: 4px;
+        }
+        
+        .mistake-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .mistake-modal-content {
+            background: linear-gradient(135deg, rgba(26, 31, 53, 0.95), rgba(30, 41, 69, 0.95));
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+            border: 2px solid rgba(79, 195, 247, 0.3);
+            position: relative;
+        }
+        
+        .mistake-question {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 15px;
+            margin: 10px 0;
+            position: relative;
+        }
+        
+        .mistake-question-text {
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+        
+        .mistake-details {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            font-size: 12px;
+            color: #b0bec5;
+        }
+        
+        .mistake-remove-btn {
+            position: absolute !important;
+            top: 10px;
+            right: 10px;
+            background: linear-gradient(45deg, #66bb6a, #4caf50) !important;
+            width: 30px !important;
+            height: 30px !important;
+            border-radius: 50% !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            font-size: 16px !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .subject-mistakes h4 {
+            color: #4fc3f7;
+            margin: 20px 0 10px 0;
+            border-bottom: 1px solid rgba(79, 195, 247, 0.3);
+            padding-bottom: 5px;
+        }
+        
+        .control-buttons {
+            text-align: center;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="particles" id="particlesContainer"></div>
+    
+    <div class="container">
+        <h1>LernHub</h1>
+        <p class="subtitle">🏫 Gymnasium 5. Klasse Bayern • Anspruchsvolles Lernen</p>
+        
+        <!-- Belohnungen Dashboard -->
+        <div class="rewards-dashboard">
+            <div class="reward-item" onclick="showRewardDetails('correct')">
+                <span class="reward-icon">🎯</span>
+                <div class="reward-info">
+                    <span class="reward-number" id="totalCorrect">0</span>
+                    <span class="reward-label">Richtige Antworten</span>
+                </div>
+            </div>
+            <div class="reward-item" onclick="showRewardDetails('streak')">
+                <span class="reward-icon">🔥</span>
+                <div class="reward-info">
+                    <span class="reward-number" id="streakDisplay">0</span>
+                    <span class="reward-label">Tage-Streak</span>
+                </div>
+            </div>
+            <div class="reward-item highlight" onclick="showRewardDetails('phone')">
+                <span class="reward-icon">📱</span>
+                <div class="reward-info">
+                    <span class="reward-number" id="phoneTimeEarned">0</span>
+                    <span class="reward-label">Min Handyzeit</span>
+                </div>
+            </div>
+            <div class="reward-item" onclick="showMistakeOverview()">
+                <span class="reward-icon">📝</span>
+                <div class="reward-info">
+                    <span class="reward-number" id="mistakeCount">0</span>
+                    <span class="reward-label">Wiederholung</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="control-buttons">
+            <button id="spendPhoneTimeBtn" style="display: none;" onclick="spendPhoneTime()">📱 Handyzeit einlösen</button>
+            <button onclick="showMistakeOverview()" style="background: linear-gradient(45deg, #ff9800, #f57c00);">📚 Fehler wiederholen</button>
+            <button onclick="startMistakeQuiz()" style="background: linear-gradient(45deg, #ab47bc, #8e24aa);">🎯 Wiederholungsquiz</button>
+        </div>
+        
+        <!-- Fächer Auswahl -->
+        <div class="subject-grid" id="subjectGrid">
+            <div class="subject-card" onclick="startQuiz('math')">
+                <span class="subject-icon">📐</span>
+                <h3 class="subject-title">Mathematik</h3>
+                <p>Natürliche Zahlen, Grundrechenarten, Geometrie, Größen</p>
+            </div>
+            <div class="subject-card" onclick="startQuiz('english')">
+                <span class="subject-icon">🇬🇧</span>
+                <h3 class="subject-title">Englisch</h3>
+                <p>Grammar, Vocabulary, Simple Past, Present Progressive</p>
+            </div>
+            <div class="subject-card" onclick="startQuiz('deutsch')">
+                <span class="subject-icon">📚</span>
+                <h3 class="subject-title">Deutsch</h3>
+                <p>Grammatik, Rechtschreibung, Literatur, Textarten</p>
+            </div>
+            <div class="subject-card" onclick="startQuiz('natur')">
+                <span class="subject-icon">🔬</span>
+                <h3 class="subject-title">Natur & Technik</h3>
+                <p>Biologie, Physik, Naturwissenschaftliches Arbeiten</p>
+            </div>
+        </div>
+        
+        <!-- Quiz Container -->
+        <div class="quiz-container" id="quizContainer">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar"></div>
+            </div>
+            
+            <div id="questionText" style="font-size: 1.3rem; margin: 30px 0; line-height: 1.6;"></div>
+            <div id="answersContainer"></div>
+            <div id="feedback" class="feedback" style="display: none;"></div>
+            
+            <div style="text-align: center; margin-top: 30px;">
+                <button id="nextBtn" onclick="nextQuestion()" style="display: none;">Nächste Frage ➡️</button>
+                <button onclick="backToHome()">🏠 Zurück zur Startseite</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fehler Modal -->
+    <div class="mistake-modal" id="mistakeModal">
+        <div class="mistake-modal-content">
+            <h2 style="color: #4fc3f7; text-align: center;">📚 Deine Wiederholungsliste</h2>
+            <div id="mistakeModalBody"></div>
+            <div style="text-align: center; margin-top: 20px;">
+                <button onclick="clearAllMistakes()" style="background: linear-gradient(45deg, #f44336, #d32f2f);">🗑️ Alle löschen</button>
+                <button onclick="closeMistakeOverview()">❌ Schließen</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Globale Variablen
+        var questions = [];
+        var currentQuestionIndex = 0;
+        var score = 0;
+        var isAnswered = false;
+        var currentSubject = '';
+        var currentMistakeMode = false;
+        
+        // Belohnungssystem
+        var totalCorrectAnswers = parseInt(localStorage.getItem('totalCorrectAnswers_gym5') || '0');
+        var streakCount = parseInt(localStorage.getItem('streakCount_gym5') || '0');
+        var earnedPhoneTime = parseInt(localStorage.getItem('earnedPhoneTime_gym5') || '0');
+        var lastPlayDate = localStorage.getItem('lastPlayDate_gym5') || '';
+        var lastEarnDate = localStorage.getItem('lastEarnDate_gym5') || '';
+        var dailyEarnedTime = parseInt(localStorage.getItem('dailyEarnedTime_gym5') || '0');
+        
+        // Gymnasium-Limits
+        var DAILY_PHONE_TIME_CAP = 60; // 60 Min/Tag für Gymnasium
+        var TOTAL_PHONE_TIME_CAP = 240; // 240 Min gesamt
+        
+        // Fehlerpool
+        var mistakePool = JSON.parse(localStorage.getItem('mistakePool_gym5') || '{}');
+        
+        // Gymnasium 5. Klasse Bayern - Fragen-Datenbank (mit separatem Audio)
+        var questionDatabase = {
+            math: [
+                {
+                    question: "Berechne: 2.847 + 5.386 =",
+                    answers: ["8.233", "8.223", "7.233", "8.133"],
+                    correct: 0,
+                    explanation: "Bei der schriftlichen Addition: 7+6=13 (3 schreiben, 1 merken), 4+8+1=13, usw."
+                },
+                {
+                    question: "Was ist 15 · 47?",
+                    answers: ["705", "695", "715", "685"],
+                    correct: 0,
+                    explanation: "15 · 47 = 15 · (40 + 7) = 15 · 40 + 15 · 7 = 600 + 105 = 705"
+                },
+                {
+                    question: "Wie viele Zentimeter sind 2,3 Meter?",
+                    answers: ["23 cm", "230 cm", "2300 cm", "0,23 cm"],
+                    correct: 1,
+                    explanation: "1 m = 100 cm, also 2,3 m = 2,3 · 100 cm = 230 cm"
+                },
+                {
+                    question: "Ein Rechteck hat die Länge 12 cm und die Breite 8 cm. Wie groß ist der Umfang?",
+                    answers: ["20 cm", "40 cm", "96 cm", "48 cm"],
+                    correct: 1,
+                    explanation: "Umfang = 2 · (Länge + Breite) = 2 · (12 + 8) = 2 · 20 = 40 cm"
+                },
+                {
+                    question: "Welche Zahl ist durch 3 teilbar?",
+                    answers: ["247", "358", "429", "536"],
+                    correct: 2,
+                    explanation: "Eine Zahl ist durch 3 teilbar, wenn ihre Quersumme durch 3 teilbar ist. 4+2+9=15, und 15 ist durch 3 teilbar."
+                }
+            ],
+            english: [
+                {
+                    question: "Choose the correct form: 'Yesterday I ___ to school.'",
+                    answers: ["go", "went", "am going", "will go"],
+                    correct: 1,
+                    explanation: "'Yesterday' signals past tense, so we use 'went' (simple past of 'go').",
+                    questionAudio: "Yesterday I blank to school", // Keine Spoiler!
+                    helpAudio: "past tense, simple past" // Hilfe-Audio
+                },
+                {
+                    question: "What is the plural of 'child'?",
+                    answers: ["childs", "childrens", "children", "child"],
+                    correct: 2,
+                    explanation: "'Child' has an irregular plural form: 'children' (not 'childs').",
+                    questionAudio: "What is the plural of child",
+                    helpAudio: "child, irregular plural"
+                },
+                {
+                    question: "Choose the correct sentence:",
+                    answers: ["She don't like apples", "She doesn't like apples", "She not like apples", "She no like apples"],
+                    correct: 1,
+                    explanation: "With 'she/he/it' we use 'doesn't' (does not) in negative sentences.",
+                    questionAudio: "Choose the correct sentence",
+                    helpAudio: "negative sentences, she he it"
+                },
+                {
+                    question: "What's the comparative form of 'big'?",
+                    answers: ["more big", "bigger", "bigest", "most big"],
+                    correct: 1,
+                    explanation: "Short adjectives form the comparative with -er: big → bigger",
+                    questionAudio: "What is the comparative form of big",
+                    helpAudio: "comparative, short adjectives, big"
+                },
+                {
+                    question: "Complete: 'I ___ watching TV right now.'",
+                    answers: ["am", "is", "are", "be"],
+                    correct: 0,
+                    explanation: "Present Progressive with 'I' uses 'am': I am watching TV.",
+                    questionAudio: "I blank watching TV right now",
+                    helpAudio: "present progressive, continuous"
+                }
+            ],
+            deutsch: [
+                {
+                    question: "Welches Wort ist ein Verb?",
+                    answers: ["Haus", "schnell", "laufen", "schön"],
+                    correct: 2,
+                    explanation: "Ein Verb beschreibt eine Tätigkeit oder einen Zustand. 'Laufen' ist ein Verb (Tunwort)."
+                },
+                {
+                    question: "Wie heißt die erste Person Singular von 'gehen' im Präsens?",
+                    answers: ["ich gehe", "du gehst", "er geht", "wir gehen"],
+                    correct: 0,
+                    explanation: "Die erste Person Singular ist 'ich'. Das Verb 'gehen' wird zu 'ich gehe'."
+                },
+                {
+                    question: "Welcher Artikel gehört zu 'Mädchen'?",
+                    answers: ["der", "die", "das", "den"],
+                    correct: 2,
+                    explanation: "'Mädchen' ist ein Neutrum und hat den Artikel 'das' (auch wenn es weiblich ist!)."
+                },
+                {
+                    question: "Was ist ein Adjektiv in diesem Satz: 'Der große Hund bellt laut.'",
+                    answers: ["Hund", "große", "bellt", "laut"],
+                    correct: 1,
+                    explanation: "'Große' ist ein Adjektiv, es beschreibt eine Eigenschaft des Hundes."
+                },
+                {
+                    question: "Wie wird 'Straße' korrekt geschrieben?",
+                    answers: ["Straße", "Strasse", "Straße", "Straaße"],
+                    correct: 0,
+                    explanation: "Nach einem langen Vokal (a) folgt 'ß', also 'Straße'."
+                }
+            ],
+            natur: [
+                {
+                    question: "Aus welchen Bestandteilen besteht ein Atom?",
+                    answers: ["Nur Elektronen", "Protonen und Neutronen", "Protonen, Neutronen und Elektronen", "Nur Protonen"],
+                    correct: 2,
+                    explanation: "Ein Atom besteht aus Protonen und Neutronen im Kern sowie Elektronen in der Hülle."
+                },
+                {
+                    question: "Wie nennt man Tiere, die nur Pflanzen fressen?",
+                    answers: ["Fleischfresser", "Allesfresser", "Pflanzenfresser", "Parasiten"],
+                    correct: 2,
+                    explanation: "Tiere, die nur Pflanzen fressen, nennt man Pflanzenfresser oder Herbivoren."
+                },
+                {
+                    question: "Bei welcher Temperatur gefriert Wasser?",
+                    answers: ["0°C", "100°C", "-10°C", "32°C"],
+                    correct: 0,
+                    explanation: "Wasser gefriert bei 0°C (Null Grad Celsius) und wird zu Eis."
+                },
+                {
+                    question: "Welches Organ ist für die Fotosynthese bei Pflanzen zuständig?",
+                    answers: ["Wurzel", "Stamm", "Blatt", "Blüte"],
+                    correct: 2,
+                    explanation: "Die Fotosynthese findet hauptsächlich in den Blättern statt, wo das Chlorophyll ist."
+                },
+                {
+                    question: "Wie viele Knochen hat ein erwachsener Mensch ungefähr?",
+                    answers: ["150", "206", "300", "100"],
+                    correct: 1,
+                    explanation: "Ein erwachsener Mensch hat etwa 206 Knochen (bei der Geburt sind es noch mehr, die dann zusammenwachsen)."
+                }
+            ]
+        };
+        
+        // Particles Animation
+        function createParticles() {
+            var particlesContainer = document.getElementById('particlesContainer');
+            var colors = ['#4fc3f7', '#66bb6a', '#ff9800', '#ab47bc', '#26a69a'];
+            
+            for (var i = 0; i < 12; i++) {
+                var particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.width = (Math.random() * 6 + 4) + 'px';
+                particle.style.height = particle.style.width;
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.animationDelay = Math.random() * 20 + 's';
+                particle.style.animationDuration = (Math.random() * 10 + 15) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+        
+        // ANTI-SPOILER Audio-Funktionen
+        function speakText(text) {
+            if ('speechSynthesis' in window) {
+                // Ersetze "_" mit "blank" statt "beep" für neutralere Aussprache
+                var cleanText = text.replace(/_+/g, 'blank');
+                
+                var utterance = new SpeechSynthesisUtterance(cleanText);
+                utterance.lang = 'en-US';
+                utterance.rate = 0.8;
+                speechSynthesis.speak(utterance);
+            }
+        }
+        
+        function speakEnglishContent(text, type) {
+            if ('speechSynthesis' in window) {
+                // Ersetze "_" mit "blank" für neutrale Lücken-Darstellung
+                var cleanText = text.replace(/_+/g, 'blank');
+                
+                var utterance = new SpeechSynthesisUtterance(cleanText);
+                utterance.lang = 'en-US';
+                utterance.rate = type === 'question' ? 0.7 : 0.8;
+                speechSynthesis.speak(utterance);
+            }
+        }
+        
+        // Touch Support für iOS
+        function addTouchSupport() {
+            var style = document.createElement('style');
+            style.textContent = `
+                .subject-card { -webkit-tap-highlight-color: transparent; }
+                .answer { -webkit-tap-highlight-color: transparent; }
+                button { -webkit-tap-highlight-color: transparent; }
+                .reward-item { -webkit-tap-highlight-color: transparent; }
+            `;
+            document.head.appendChild(style);
+        }
+        
+        // Quiz starten
+        function startQuiz(subject) {
+            currentSubject = subject;
+            currentMistakeMode = false;
+            
+            questions = questionDatabase[subject] || [];
+            if (questions.length === 0) {
+                alert('Für dieses Fach sind noch keine Fragen verfügbar!');
+                return;
+            }
+            
+            // Fragen mischen
+            questions = shuffleArray([...questions]);
+            
+            document.getElementById('subjectGrid').style.display = 'none';
+            document.getElementById('quizContainer').style.display = 'block';
+            
+            currentQuestionIndex = 0;
+            score = 0;
+            showQuestion();
+        }
+        
+        // Fehlerpool-Quiz starten
+        function startMistakeQuiz() {
+            var allMistakes = [];
+            for (var subject in mistakePool) {
+                if (mistakePool[subject] && mistakePool[subject].length > 0) {
+                    allMistakes = allMistakes.concat(mistakePool[subject].map(function(mistake) {
+                        return Object.assign({}, mistake, {subject: subject});
+                    }));
+                }
+            }
+            
+            if (allMistakes.length === 0) {
+                alert('Perfekt! Keine Fehler zum Wiederholen!');
+                return;
+            }
+            
+            currentMistakeMode = true;
+            currentSubject = 'mixed';
+            questions = shuffleArray(allMistakes);
+            
+            document.getElementById('subjectGrid').style.display = 'none';
+            document.getElementById('quizContainer').style.display = 'block';
+            
+            currentQuestionIndex = 0;
+            score = 0;
+            showQuestion();
+        }
+        
+        // Array mischen (Fisher-Yates)
+        function shuffleArray(array) {
+            for (var i = array.length - 1; i > 0; i--) {
+                var j = Math.floor(Math.random() * (i + 1));
+                var temp = array[i];
+                array[i] = array[j];
+                array[j] = temp;
+            }
+            return array;
+        }
+        
+        // Frage anzeigen (OHNE SPOILER!)
+        function showQuestion() {
+            if (currentQuestionIndex >= questions.length) {
+                showResults();
+                return;
+            }
+            
+            var question = questions[currentQuestionIndex];
+            
+            // Progress Bar
+            var progress = ((currentQuestionIndex + 1) / questions.length) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+            
+            // Frage
+            var questionTextElement = document.getElementById('questionText');
+            questionTextElement.innerHTML = '';
+            
+            var questionSpan = document.createElement('span');
+            questionSpan.textContent = question.question;
+            questionTextElement.appendChild(questionSpan);
+            
+            // ANTI-SPOILER Audio-Buttons für Englisch
+            if ((currentSubject === 'english' || question.subject === 'english')) {
+                var audioButtonsContainer = document.createElement('div');
+                audioButtonsContainer.style.marginTop = '15px';
+                
+                // Frage vorlesen (OHNE Lösung!)
+                if (question.questionAudio) {
+                    var questionAudioBtn = document.createElement('button');
+                    questionAudioBtn.className = 'audio-button';
+                    questionAudioBtn.innerHTML = '🔊 Question';
+                    questionAudioBtn.title = 'Frage anhören (ohne Lösung)';
+                    questionAudioBtn.onclick = function() { 
+                        speakEnglishContent(question.questionAudio, 'question'); 
+                    };
+                    audioButtonsContainer.appendChild(questionAudioBtn);
+                }
+                
+                // Hilfe-Audio (Grammatik-Hinweise statt Lösung)
+                if (question.helpAudio) {
+                    var helpAudioBtn = document.createElement('button');
+                    helpAudioBtn.className = 'audio-button';
+                    helpAudioBtn.innerHTML = '💡 Hilfe';
+                    helpAudioBtn.title = 'Grammatik-Hinweise anhören';
+                    helpAudioBtn.onclick = function() { speakText(question.helpAudio); };
+                    audioButtonsContainer.appendChild(helpAudioBtn);
+                }
+                
+                questionTextElement.appendChild(audioButtonsContainer);
+            }
+            
+            // Antworten
+            var container = document.getElementById('answersContainer');
+            container.innerHTML = '';
+            
+            for (var i = 0; i < question.answers.length; i++) {
+                var answerDiv = document.createElement('div');
+                answerDiv.className = 'answer';
+                answerDiv.textContent = question.answers[i];
+                
+                // Touch-Events für iOS
+                answerDiv.addEventListener('touchstart', function(e) {
+                    e.preventDefault();
+                    this.style.transform = 'translateY(-2px) scale(1.01)';
+                });
+                
+                answerDiv.addEventListener('touchend', (function(index) {
+                    return function(e) {
+                        e.preventDefault();
+                        this.style.transform = '';
+                        selectAnswer(index);
+                    };
+                })(i));
+                
+                // Click-Event
+                answerDiv.onclick = (function(index) {
+                    return function() { selectAnswer(index); };
+                })(i);
+                
+                // Audio für einzelne Antworten (ohne Verrat)
+                if ((currentSubject === 'english' || question.subject === 'english')) {
+                    answerDiv.addEventListener('dblclick', function() {
+                        speakEnglishContent(this.textContent, 'answer');
+                    });
+                    answerDiv.title = 'Doppelklick für Aussprache';
+                }
+                
+                container.appendChild(answerDiv);
+            }
+            
+            document.getElementById('feedback').style.display = 'none';
+            document.getElementById('nextBtn').style.display = 'none';
+            isAnswered = false;
+        }
+        
+        // Antwort auswählen
+        function selectAnswer(selectedIndex) {
+            if (isAnswered) return;
+            
+            isAnswered = true;
+            var question = questions[currentQuestionIndex];
+            var answers = document.querySelectorAll('.answer');
+            var feedback = document.getElementById('feedback');
+            
+            for (var i = 0; i < answers.length; i++) {
+                if (i === question.correct) {
+                    answers[i].classList.add('correct');
+                } else if (i === selectedIndex) {
+                    answers[i].classList.add('incorrect');
+                }
+                answers[i].onclick = null;
+            }
+            
+            if (selectedIndex === question.correct) {
+                score++;
+                
+                if (!currentMistakeMode) {
+                    addCorrectAnswer();
+                } else {
+                    // Fehlerpool-Modus: Fortschritt tracken
+                    if (question.practiceCount === undefined) {
+                        question.practiceCount = 0;
+                    }
+                    question.practiceCount++;
+                    
+                    if (question.practiceCount >= 3) {
+                        removeFromMistakePool(question.subject || currentSubject, question.question);
+                        alert('✅ Frage gemeistert! Aus Wiederholungspool entfernt!');
+                    } else {
+                        var remaining = 3 - question.practiceCount;
+                        alert('👍 Noch ' + remaining + 'x richtig bis gemeistert!');
+                    }
+                }
+                
+                feedback.textContent = 'Richtig! ' + question.explanation;
+                feedback.className = 'feedback correct';
+            } else {
+                if (!currentMistakeMode) {
+                    addToMistakePool(question.subject || currentSubject, question, selectedIndex);
+                }
+                
+                feedback.textContent = 'Falsch. ' + question.explanation;
+                feedback.className = 'feedback incorrect';
+            }
+            
+            feedback.style.display = 'block';
+            document.getElementById('nextBtn').style.display = 'inline-block';
+        }
+        
+        // Nächste Frage
+        function nextQuestion() {
+            currentQuestionIndex++;
+            showQuestion();
+        }
+        
+        // Ergebnisse anzeigen
+        function showResults() {
+            var percentage = Math.round((score / questions.length) * 100);
+            var message = '';
+            
+            if (percentage >= 80) message = '🎉 Ausgezeichnet!';
+            else if (percentage >= 60) message = '👍 Gut gemacht!';
+            else if (percentage >= 40) message = '📚 Weiter üben!';
+            else message = '💪 Dranbleiben!';
+            
+            document.getElementById('questionText').innerHTML = 
+                '<h3>' + message + '</h3><p>Du hast ' + score + ' von ' + questions.length + ' Fragen richtig beantwortet!</p><p style="font-size: 1rem; color: #b0bec5;">Das entspricht ' + percentage + '% - ' + (percentage >= 60 ? 'Sehr gut für Gymnasium-Niveau!' : 'Das Gymnasium ist anspruchsvoll, weiter so!') + '</p>';
+            document.getElementById('answersContainer').innerHTML = '';
+            document.getElementById('feedback').style.display = 'none';
+            document.getElementById('nextBtn').style.display = 'none';
+        }
+        
+        // Zurück zur Startseite
+        function backToHome() {
+            document.getElementById('quizContainer').style.display = 'none';
+            document.getElementById('subjectGrid').style.display = 'grid';
+        }
+        
+        // Belohnungen verwalten
+        function addCorrectAnswer() {
+            totalCorrectAnswers++;
+            localStorage.setItem('totalCorrectAnswers_gym5', totalCorrectAnswers);
+            
+            var today = new Date().toDateString();
+            if (lastEarnDate !== today) {
+                dailyEarnedTime = 0;
+                lastEarnDate = today;
+            }
+            
+            // Handyzeit verdienen
+            if (earnedPhoneTime < TOTAL_PHONE_TIME_CAP && dailyEarnedTime < DAILY_PHONE_TIME_CAP) {
+                var timeToAdd = Math.min(2, TOTAL_PHONE_TIME_CAP - earnedPhoneTime, DAILY_PHONE_TIME_CAP - dailyEarnedTime);
+                earnedPhoneTime += timeToAdd;
+                dailyEarnedTime += timeToAdd;
+                
+                localStorage.setItem('earnedPhoneTime_gym5', earnedPhoneTime);
+                localStorage.setItem('dailyEarnedTime_gym5', dailyEarnedTime);
+                localStorage.setItem('lastEarnDate_gym5', lastEarnDate);
+            }
+            
+            updateRewardDisplay();
+        }
+        
+        function spendPhoneTime() {
+            if (earnedPhoneTime <= 0) {
+                alert('📱 Keine Handyzeit verfügbar!\nLöse Quiz-Aufgaben und verdiene dir welche! 📚');
+                return;
+            }
+            
+            var spendAmount = prompt('📱 Wie viele Minuten einlösen?\nVerfügbar: ' + earnedPhoneTime + ' Minuten');
+            if (spendAmount === null) return;
+            
+            spendAmount = parseInt(spendAmount);
+            if (isNaN(spendAmount) || spendAmount <= 0 || spendAmount > earnedPhoneTime) {
+                alert('❌ Ungültige Eingabe!');
+                return;
+            }
+            
+            if (confirm('📱 ' + spendAmount + ' Minuten einlösen?')) {
+                earnedPhoneTime -= spendAmount;
+                localStorage.setItem('earnedPhoneTime_gym5', earnedPhoneTime);
+                updateRewardDisplay();
+                alert('🎉 ' + spendAmount + ' Minuten eingelöst!\nViel Spaß! 📱');
+            }
+        }
+        
+        // Fehler-Management
+        function addToMistakePool(subject, question, wrongAnswer) {
+            if (!mistakePool[subject]) {
+                mistakePool[subject] = [];
+            }
+            
+            var exists = false;
+            for (var i = 0; i < mistakePool[subject].length; i++) {
+                if (mistakePool[subject][i].question === question.question) {
+                    mistakePool[subject][i].mistakeCount++;
+                    mistakePool[subject][i].lastMistake = new Date().toISOString();
+                    exists = true;
+                    break;
+                }
+            }
+            
+            if (!exists) {
+                mistakePool[subject].push({
+                    question: question.question,
+                    answers: question.answers,
+                    correct: question.correct,
+                    explanation: question.explanation,
+                    wrongAnswer: wrongAnswer,
+                    mistakeCount: 1,
+                    lastMistake: new Date().toISOString(),
+                    practiceCount: 0
+                });
+            }
+            
+            localStorage.setItem('mistakePool_gym5', JSON.stringify(mistakePool));
+            updateMistakePoolDisplay();
+        }
+        
+        function removeFromMistakePool(subject, questionText) {
+            if (mistakePool[subject]) {
+                mistakePool[subject] = mistakePool[subject].filter(function(mistake) {
+                    return mistake.question !== questionText;
+                });
+                localStorage.setItem('mistakePool_gym5', JSON.stringify(mistakePool));
+                updateMistakePoolDisplay();
+            }
+        }
+        
+        function showMistakeOverview() {
+            var modal = document.getElementById('mistakeModal');
+            var modalBody = document.getElementById('mistakeModalBody');
+            modalBody.innerHTML = '';
+            
+            var hasAnyMistakes = false;
+            
+            for (var subject in mistakePool) {
+                if (mistakePool[subject] && mistakePool[subject].length > 0) {
+                    hasAnyMistakes = true;
+                    var subjectDiv = document.createElement('div');
+                    subjectDiv.className = 'subject-mistakes';
+                    
+                    var subjectTitle = document.createElement('h4');
+                    var subjectName = subject.charAt(0).toUpperCase() + subject.slice(1);
+                    if (subject === 'natur') subjectName = 'Natur & Technik';
+                    subjectTitle.textContent = subjectName + ' (' + mistakePool[subject].length + ' Fragen)';
+                    subjectDiv.appendChild(subjectTitle);
+                    
+                    mistakePool[subject].forEach(function(mistake, index) {
+                        var questionDiv = document.createElement('div');
+                        questionDiv.className = 'mistake-question';
+                        
+                        var questionText = document.createElement('div');
+                        questionText.className = 'mistake-question-text';
+                        questionText.textContent = mistake.question;
+                        questionDiv.appendChild(questionText);
+                        
+                        var details = document.createElement('div');
+                        details.className = 'mistake-details';
+                        
+                        var mistakeInfo = document.createElement('span');
+                        mistakeInfo.innerHTML = '❌ ' + mistake.mistakeCount + 'x falsch';
+                        details.appendChild(mistakeInfo);
+                        
+                        var dateInfo = document.createElement('span');
+                        dateInfo.innerHTML = '🗓️ ' + new Date(mistake.lastMistake).toLocaleDateString();
+                        details.appendChild(dateInfo);
+                        
+                        if (mistake.practiceCount > 0) {
+                            var practiceInfo = document.createElement('span');
+                            practiceInfo.innerHTML = '✅ ' + mistake.practiceCount + 'x geübt';
+                            details.appendChild(practiceInfo);
+                        }
+                        
+                        questionDiv.appendChild(details);
+                        
+                        var removeBtn = document.createElement('button');
+                        removeBtn.className = 'mistake-remove-btn';
+                        removeBtn.innerHTML = '✓';
+                        removeBtn.title = 'Als beherrscht markieren';
+                        removeBtn.onclick = function(subj, idx) {
+                            return function() {
+                                removeSingleMistake(subj, idx);
+                            };
+                        }(subject, index);
+                        questionDiv.appendChild(removeBtn);
+                        
+                        subjectDiv.appendChild(questionDiv);
+                    });
+                    
+                    modalBody.appendChild(subjectDiv);
+                }
+            }
+            
+            if (!hasAnyMistakes) {
+                modalBody.innerHTML = '<div style="text-align: center; padding: 40px; color: #66bb6a;"><h3>🎉 Perfekt!</h3><p>Keine Fehler zum Wiederholen!</p></div>';
+            }
+            
+            modal.style.display = 'flex';
+        }
+        
+        function removeSingleMistake(subject, index) {
+            if (mistakePool[subject] && mistakePool[subject][index]) {
+                var question = mistakePool[subject][index].question;
+                mistakePool[subject].splice(index, 1);
+                localStorage.setItem('mistakePool_gym5', JSON.stringify(mistakePool));
+                updateMistakePoolDisplay();
+                alert('✅ "' + question.substring(0, 50) + '..." aus Wiederholungspool entfernt!');
+                showMistakeOverview();
+            }
+        }
+        
+        function closeMistakeOverview() {
+            document.getElementById('mistakeModal').style.display = 'none';
+        }
+        
+        function clearAllMistakes() {
+            if (confirm('🗑️ Sicher? Alle Wiederholungsfragen löschen?')) {
+                mistakePool = {};
+                localStorage.setItem('mistakePool_gym5', JSON.stringify(mistakePool));
+                updateMistakePoolDisplay();
+                closeMistakeOverview();
+                alert('🎉 Wiederholungspool geleert!');
+            }
+        }
+        
+        // Display-Funktionen
+        function updateRewardDisplay() {
+            document.getElementById('totalCorrect').textContent = totalCorrectAnswers;
+            document.getElementById('streakDisplay').textContent = streakCount;
+            
+            var phoneTimeElement = document.getElementById('phoneTimeEarned');
+            phoneTimeElement.textContent = earnedPhoneTime;
+            
+            var spendBtn = document.getElementById('spendPhoneTimeBtn');
+            if (earnedPhoneTime > 0) {
+                spendBtn.style.display = 'inline-block';
+                spendBtn.textContent = '📱 ' + earnedPhoneTime + ' Min einlösen';
+            } else {
+                spendBtn.style.display = 'none';
+            }
+        }
+        
+        function updateMistakePoolDisplay() {
+            var totalMistakes = 0;
+            for (var subject in mistakePool) {
+                totalMistakes += mistakePool[subject].length;
+            }
+            document.getElementById('mistakeCount').textContent = totalMistakes;
+        }
+        
+        function showRewardDetails(type) {
+            var message = '';
+            switch(type) {
+                case 'correct':
+                    message = '🎯 Richtige Antworten: ' + totalCorrectAnswers + '\n\n' +
+                             '• Pro richtige Antwort: +2 Min Handyzeit\n' +
+                             '• Tageslimit: ' + DAILY_PHONE_TIME_CAP + ' Min\n' +
+                             '• Maximalguthaben: ' + TOTAL_PHONE_TIME_CAP + ' Min';
+                    break;
+                case 'streak':
+                    message = '🔥 Tage-Streak: ' + streakCount + '\n\n' +
+                             '• Spiele jeden Tag für längere Streaks\n' +
+                             '• Längere Streaks bringen Bonus-Features';
+                    break;
+                case 'phone':
+                    message = '📱 Handyzeit: ' + earnedPhoneTime + ' Min\n\n' +
+                             '• Heute verdient: ' + dailyEarnedTime + '/' + DAILY_PHONE_TIME_CAP + ' Min\n' +
+                             '• Gesamt möglich: ' + TOTAL_PHONE_TIME_CAP + ' Min\n' +
+                             '• Klicke "Einlösen" zum Verwenden';
+                    break;
+            }
+            alert(message);
+        }
+        
+        function checkDailyReset() {
+            var today = new Date().toDateString();
+            if (lastEarnDate !== today) {
+                dailyEarnedTime = 0;
+                lastEarnDate = today;
+                localStorage.setItem('dailyEarnedTime_gym5', dailyEarnedTime);
+                localStorage.setItem('lastEarnDate_gym5', lastEarnDate);
+            }
+        }
+        
+        // App initialisieren
+        window.addEventListener('load', function() {
+            console.log('LernHub Gymnasium 5: JavaScript erfolgreich geladen!');
+            createParticles();
+            updateRewardDisplay();
+            updateMistakePoolDisplay();
+            checkDailyReset();
+            addTouchSupport();
+        });
+    </script>
+</body>
+</html>
