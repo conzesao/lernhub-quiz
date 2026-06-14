@@ -297,6 +297,112 @@
             color: #ef5350;
         }
         
+        /* === VISUELL: Bild zur Frage === */
+        .question-image {
+            display: block;
+            max-width: 100%;
+            max-height: 260px;
+            margin: 15px auto;
+            border-radius: 15px;
+            border: 2px solid rgba(79, 195, 247, 0.3);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            object-fit: contain;
+        }
+        
+        /* === Merksatz nach richtiger Antwort === */
+        .memo-box {
+            margin: 15px 0;
+            padding: 12px 16px;
+            border-radius: 12px;
+            background: linear-gradient(45deg, rgba(171, 71, 188, 0.15), rgba(102, 187, 106, 0.12));
+            border: 2px solid rgba(171, 71, 188, 0.4);
+            color: #ce93d8;
+            font-weight: 500;
+            text-align: center;
+        }
+        .memo-box::before { content: "💡 Merke: "; font-weight: 700; }
+        
+        /* === KINÄSTHETISCH: Drag-and-drop Zuordnen === */
+        .match-container {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin: 15px 0;
+        }
+        .match-column {
+            flex: 1;
+            min-width: 140px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .match-term {
+            background: rgba(79, 195, 247, 0.12);
+            border: 2px solid rgba(79, 195, 247, 0.35);
+            border-radius: 12px;
+            padding: 14px;
+            font-size: 1rem;
+            font-weight: 500;
+            text-align: center;
+        }
+        .match-drop {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            padding: 14px;
+            min-height: 24px;
+            text-align: center;
+            transition: all 0.25s ease;
+        }
+        .match-drop.over {
+            background: rgba(79, 195, 247, 0.2);
+            border-color: #4fc3f7;
+        }
+        .match-drop.filled {
+            border-style: solid;
+            border-color: rgba(102, 187, 106, 0.5);
+            background: rgba(102, 187, 106, 0.1);
+        }
+        .match-bank {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin: 15px 0;
+            padding: 12px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.04);
+        }
+        .match-chip {
+            background: linear-gradient(45deg, #ff9800, #f57c00);
+            color: white;
+            border-radius: 20px;
+            padding: 10px 16px;
+            font-weight: 500;
+            cursor: grab;
+            user-select: none;
+            touch-action: none;
+            transition: transform 0.2s ease, opacity 0.2s ease;
+        }
+        .match-chip:active { cursor: grabbing; transform: scale(1.05); }
+        .match-chip.dragging { opacity: 0.4; }
+        .match-chip.placed { cursor: grab; }
+        .match-drop.correct-match {
+            border-color: #66bb6a;
+            background: rgba(102, 187, 106, 0.18);
+        }
+        .match-drop.wrong-match {
+            border-color: #f44336;
+            background: rgba(244, 67, 54, 0.18);
+        }
+        .match-check-btn {
+            display: block;
+            margin: 10px auto 0;
+            background: linear-gradient(45deg, #66bb6a, #4caf50) !important;
+            padding: 12px 28px !important;
+            font-size: 1rem !important;
+        }
+        
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(-10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -660,6 +766,17 @@
                     answers: ["Straße", "Strasse", "Straße", "Straaße"],
                     correct: 0,
                     explanation: "Nach einem langen Vokal (a) folgt 'ß', also 'Straße'."
+                },
+                {
+                    type: "match",
+                    question: "Ordne jedes Wort der richtigen Wortart zu:",
+                    pairs: [
+                        { term: "laufen", match: "Verb" },
+                        { term: "Haus", match: "Nomen" },
+                        { term: "schön", match: "Adjektiv" }
+                    ],
+                    explanation: "Verb = Tätigkeit, Nomen = Ding/Lebewesen, Adjektiv = Eigenschaft.",
+                    memo: "Wortarten: Verben tun, Nomen sind, Adjektive beschreiben."
                 }
             ],
             natur: [
@@ -685,7 +802,9 @@
                     question: "Welches Organ ist für die Fotosynthese bei Pflanzen zuständig?",
                     answers: ["Wurzel", "Stamm", "Blatt", "Blüte"],
                     correct: 2,
-                    explanation: "Die Fotosynthese findet hauptsächlich in den Blättern statt, wo das Chlorophyll ist."
+                    explanation: "Die Fotosynthese findet hauptsächlich in den Blättern statt, wo das Chlorophyll ist.",
+                    image: "images/fotosynthese.png",
+                    memo: "Blätter = grüne Kraftwerke (Chlorophyll)"
                 },
                 {
                     question: "Wie viele Knochen hat ein erwachsener Mensch ungefähr?",
@@ -821,6 +940,10 @@
             
             var question = questions[currentQuestionIndex];
             
+            // Alte Merksatz-Boxen entfernen (sonst stapeln sie sich)
+            var oldMemos = document.querySelectorAll('.memo-box');
+            for (var m = 0; m < oldMemos.length; m++) { oldMemos[m].remove(); }
+            
             // Progress Bar
             var progress = ((currentQuestionIndex + 1) / questions.length) * 100;
             document.getElementById('progressBar').style.width = progress + '%';
@@ -832,6 +955,25 @@
             var questionSpan = document.createElement('span');
             questionSpan.textContent = question.question;
             questionTextElement.appendChild(questionSpan);
+            
+            // VISUELL: Bild zur Frage anzeigen (optional)
+            if (question.image) {
+                var img = document.createElement('img');
+                img.className = 'question-image';
+                img.src = question.image;
+                img.alt = 'Bild zur Frage';
+                img.onerror = function() { this.style.display = 'none'; };
+                questionTextElement.appendChild(img);
+            }
+            
+            // KINÄSTHETISCH: Zuordnungs-Aufgabe (Drag & Drop)
+            if (question.type === 'match') {
+                renderMatchQuestion(question);
+                document.getElementById('feedback').style.display = 'none';
+                document.getElementById('nextBtn').style.display = 'none';
+                isAnswered = false;
+                return;
+            }
             
             // ANTI-SPOILER Audio-Buttons für Englisch
             if ((currentSubject === 'english' || question.subject === 'english')) {
@@ -907,6 +1049,183 @@
             isAnswered = false;
         }
         
+        // === Merksatz anzeigen (nach richtiger Antwort) ===
+        function showMemo(question) {
+            if (!question.memo) return;
+            var feedback = document.getElementById('feedback');
+            var memo = document.createElement('div');
+            memo.className = 'memo-box';
+            memo.textContent = question.memo;
+            feedback.parentNode.insertBefore(memo, feedback.nextSibling);
+        }
+        
+        // === KINÄSTHETISCH: Drag-and-drop Zuordnen ===
+        var matchState = null;
+        
+        function renderMatchQuestion(question) {
+            var container = document.getElementById('answersContainer');
+            container.innerHTML = '';
+            
+            // Begriffe (links) + Ablagezonen (rechts daneben), Chips gemischt im Pool
+            var terms = question.pairs.map(function(p) { return p.term; });
+            var matches = shuffleArray(question.pairs.map(function(p) { return p.match; }));
+            matchState = { question: question, placed: {}, checked: false };
+            
+            var wrap = document.createElement('div');
+            
+            // Begriff-Zeilen mit Ablagezone
+            var rows = document.createElement('div');
+            rows.className = 'match-container';
+            var colTerms = document.createElement('div');
+            colTerms.className = 'match-column';
+            var colDrops = document.createElement('div');
+            colDrops.className = 'match-column';
+            
+            terms.forEach(function(term) {
+                var t = document.createElement('div');
+                t.className = 'match-term';
+                t.textContent = term;
+                colTerms.appendChild(t);
+                
+                var drop = document.createElement('div');
+                drop.className = 'match-drop';
+                drop.dataset.term = term;
+                drop.textContent = 'hierher ziehen';
+                colDrops.appendChild(drop);
+            });
+            rows.appendChild(colTerms);
+            rows.appendChild(colDrops);
+            wrap.appendChild(rows);
+            
+            // Chip-Pool
+            var bank = document.createElement('div');
+            bank.className = 'match-bank';
+            matches.forEach(function(m) {
+                var chip = document.createElement('div');
+                chip.className = 'match-chip';
+                chip.textContent = m;
+                chip.draggable = true;
+                makeChipDraggable(chip);
+                bank.appendChild(chip);
+            });
+            wrap.appendChild(bank);
+            
+            // Prüfen-Button
+            var checkBtn = document.createElement('button');
+            checkBtn.className = 'match-check-btn';
+            checkBtn.textContent = '✓ Prüfen';
+            checkBtn.onclick = checkMatch;
+            wrap.appendChild(checkBtn);
+            
+            container.appendChild(wrap);
+            setupDropZones(wrap);
+        }
+        
+        var draggedChip = null;
+        
+        function makeChipDraggable(chip) {
+            // Maus / Desktop
+            chip.addEventListener('dragstart', function(e) {
+                draggedChip = chip;
+                chip.classList.add('dragging');
+            });
+            chip.addEventListener('dragend', function() {
+                chip.classList.remove('dragging');
+            });
+            // Touch / iPad
+            chip.addEventListener('touchstart', function(e) {
+                draggedChip = chip;
+                chip.classList.add('dragging');
+            }, { passive: true });
+            chip.addEventListener('touchend', function(e) {
+                var t = e.changedTouches[0];
+                var el = document.elementFromPoint(t.clientX, t.clientY);
+                var drop = el ? el.closest('.match-drop') : null;
+                if (drop) placeChip(draggedChip, drop);
+                chip.classList.remove('dragging');
+                draggedChip = null;
+            });
+        }
+        
+        function setupDropZones(wrap) {
+            var drops = wrap.querySelectorAll('.match-drop');
+            drops.forEach(function(drop) {
+                drop.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    drop.classList.add('over');
+                });
+                drop.addEventListener('dragleave', function() {
+                    drop.classList.remove('over');
+                });
+                drop.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    drop.classList.remove('over');
+                    if (draggedChip) placeChip(draggedChip, drop);
+                });
+            });
+        }
+        
+        function placeChip(chip, drop) {
+            if (matchState.checked) return;
+            // Falls Zone schon belegt: alten Chip zurück in den Pool
+            var existing = drop.querySelector('.match-chip');
+            var bank = document.querySelector('.match-bank');
+            if (existing) bank.appendChild(existing);
+            drop.textContent = '';
+            drop.appendChild(chip);
+            chip.classList.add('placed');
+            drop.classList.add('filled');
+            matchState.placed[drop.dataset.term] = chip.textContent;
+        }
+        
+        function checkMatch() {
+            if (matchState.checked) return;
+            matchState.checked = true;
+            var question = matchState.question;
+            var correctCount = 0;
+            
+            question.pairs.forEach(function(pair) {
+                var drop = document.querySelector('.match-drop[data-term="' + pair.term + '"]');
+                if (matchState.placed[pair.term] === pair.match) {
+                    drop.classList.add('correct-match');
+                    correctCount++;
+                } else {
+                    drop.classList.add('wrong-match');
+                }
+            });
+            
+            var allCorrect = correctCount === question.pairs.length;
+            var feedback = document.getElementById('feedback');
+            
+            if (allCorrect) {
+                score++;
+                if (!currentMistakeMode) {
+                    addCorrectAnswer();
+                } else {
+                    question.practiceCount = (question.practiceCount || 0) + 1;
+                    if (question.practiceCount >= 3) {
+                        removeFromMistakePool(question.subject || currentSubject, question.question);
+                        alert('✅ Frage gemeistert! Aus Wiederholungspool entfernt!');
+                    } else {
+                        alert('👍 Noch ' + (3 - question.practiceCount) + 'x richtig bis gemeistert!');
+                    }
+                }
+                feedback.textContent = 'Richtig! ' + question.explanation;
+                feedback.className = 'feedback correct';
+                showMemo(question);
+            } else {
+                if (!currentMistakeMode) {
+                    addToMistakePool(question.subject || currentSubject, question, -1);
+                }
+                feedback.textContent = 'Fast! ' + correctCount + ' von ' +
+                    question.pairs.length + ' richtig. ' + question.explanation;
+                feedback.className = 'feedback incorrect';
+            }
+            
+            feedback.style.display = 'block';
+            document.getElementById('nextBtn').style.display = 'inline-block';
+        }
+        
         // Antwort auswählen
         function selectAnswer(selectedIndex) {
             if (isAnswered) return;
@@ -948,6 +1267,7 @@
                 
                 feedback.textContent = 'Richtig! ' + question.explanation;
                 feedback.className = 'feedback correct';
+                showMemo(question);
             } else {
                 if (!currentMistakeMode) {
                     addToMistakePool(question.subject || currentSubject, question, selectedIndex);
